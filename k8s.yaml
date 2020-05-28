@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: blog-world
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blog
+  template:
+    metadata:
+      namespace: default
+      labels:
+        app: blog
+    spec:
+      containers:
+        - name: blog-container
+          image: cr.yandex/crp39ijmhh8q955lms3v/blog:__VERSION__
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: default
+  name: my-nginx
+  labels:
+    app: blog
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    app: blog
+  type: LoadBalancer
