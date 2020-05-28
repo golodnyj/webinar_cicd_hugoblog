@@ -1,0 +1,38 @@
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  image: docker:18-git 
+  
+  variables:
+   DOCKER_DRIVER: overlay2
+   DOCKER_TLS_CERTDIR: ""
+   DOCKER_HOST: tcp://localhost:2375/
+  
+  services:
+    - docker:19.03.1-dind
+
+  only:
+    - master
+    
+  before_script:
+    - git submodule sync --recursive
+    - git submodule update --init --recursive
+  
+  script:
+    - docker login -u oauth -p $OAUTH cr.yandex
+    - docker build -t cr.yandex/$REGISTRYID/blog:$CI_COMMIT_SHORT_SHA .
+    - docker push cr.yandex/$REGISTRYID/blog:$CI_COMMIT_SHORT_SHA
+
+deploy:
+  image: gcr.io/cloud-builders/kubectl:latest
+  stage: deploy
+  script:
+    - kubectl config set-cluster k8s --server="$KUBE_URL" --insecure-skip-tls-verify=true
+    - kubectl config set-credentials admin --token="$KUBE_TOKEN"
+    - kubectl config set-context default --cluster=k8s --user=admin
+    - kubectl config use-context default
+    - sed -i "s/__VERSION__/$CI_COMMIT_SHORT_SHA/" k8s.yaml
+    - kubectl apply -f k8s.yaml
