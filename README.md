@@ -30,8 +30,8 @@
 [webinar_cicd_hugoblog](https://github.com/golodnyj/webinar_cicd_hugoblog)
 
 ## Последовательность действий
-### Создадим виртуальную машину blog
-### Обновим blog и установим дополнительное ПО:
+### Создайте виртуальную машину blog
+### Обновите blog и установим дополнительное ПО:
 `sudo apt-get update`    
 `sudo apt-get install build-essential curl file git`  
 `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"`  
@@ -39,7 +39,7 @@
 `brew install kubectl`  
 `curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash`  
 
-### Установим и настроим HUGO
+### Установите и настроим HUGO
 Действуем согласно инструкции [Quick Start](https://gohugo.io/getting-started/quick-start/).   
 `brew install hugo`  
 `hugo new site blog`  
@@ -49,18 +49,18 @@
 `echo 'theme = "ananke"' >> config.toml`  
 `hugo server`  
 
-### Создадим виртуальную машину GitLab
+### Создайте виртуальную машину GitLab
 Используем образ виртуальной машины уже с установленным GitLab. В сервисе Virtual Private Cloud сделаем публичный адрес виртуальной машины GitLab статичным. Зададим пароль root пользователя в GitLab. Создадим отждельного пользователя с правами Admin. Создадим проект `blog`, с виртуальной машины blog, можно выложить содержание папки статического сайта в репозиторий.    
-### Создадим реестр Container Registry
+### Создайте реестр Container Registry
 После создания реестра запишите идентификатор, он потребуется далее.
 
-### Создадим сервисные аккаунты
+### Создайте сервисные аккаунты
 Можно сделать один аккаунт, но лучше два. Один с ролью `editor`, второй с ролью `container-registry.images.pusher`. Аккаунты потребуются для создания кластера Kubernetes
 
-### Создадим кластер Kubernetes
+### Создайте кластер Kubernetes
 Используйте созданные ранее сервисные аккаунты. Сохраните идентификатор кластера — он понадобится для следующих шагов. После создания кластера Kubernetes создайте в нем группу узлов.
 
-### Получим данные для интеграции Kubernetes с GitLab
+### Получите данные для интеграции Kubernetes с GitLab
 В консоле на виртуальной машине blog, установим утилиту jq `sudo apt-get install jq`. Инициализируйте консоль `yc` с помощью команды `yc init`, по полученному адресу получите OAuth токен. Токен храните в секрете, он также потребуется позже. Настройте локальное окружение на работу с созданным кластером Kubernetes:  
 `yc managed-kubernetes cluster get-credentials <cluster-id> --external`  
 
