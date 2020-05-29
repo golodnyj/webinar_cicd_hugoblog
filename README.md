@@ -35,8 +35,19 @@
 `sudo apt-get update`    
 `sudo apt-get install build-essential curl file git`  
 `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"`  
+`brew install gcc`  
 `brew install kubectl`  
 `curl https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash`  
+
+### Установим и настроим HUGO
+Действуем согласно инструкции [Quick Start](https://gohugo.io/getting-started/quick-start/).   
+`brew install hugo`  
+`hugo new site blog`  
+`cd blog`  
+`git init`  
+`git submodule add https://github.com/budparr/gohugo-theme-ananke.git themes/ananke`  
+`echo 'theme = "ananke"' >> config.toml`  
+`hugo server`  
 
 ### Создать виртуальную машину gitlab
 ### Создать Container Registry
