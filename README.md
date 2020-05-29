@@ -60,7 +60,41 @@
 ### Создадим кластер Kubernetes
 Используйте созданные ранее сервисные аккаунты. Сохраните идентификатор кластера — он понадобится для следующих шагов. После создания кластера Kubernetes создайте в нем группу узлов.
 
-### Добавить интеграцию в gitlab с kubernetes
+### Получим данные для интеграции Kubernetes с GitLab
+В консоле на виртуальной машине blog, установим утилиту jq `sudo apt-get install jq`. Инициализируйте консоль `yc` с помощью команды `yc init`, по полученному адресу получите OAuth токен. Токен храните в секрете, он также потребуется позже. Настройте локальное окружение на работу с созданным кластером Kubernetes:  
+`yc managed-kubernetes cluster get-credentials <cluster-id> --external`  
+
+Сохраните спецификацию для создания сервисного аккаунта Kubernetes в YAML-файл `gitlab-admin-service-account.yaml`:
+```
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: gitlab-admin
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: gitlab-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: gitlab-admin
+  namespace: kube-system
+```
+
+Создайте сервисный аккаунт и получите его секрет
+`kubectl apply -f gitlab-admin-service-account.yaml`   
+`kubectl -n kube-system get secrets -o json | \
+jq -r '.items[] | select(.metadata.name | startswith("gitlab-admin")) | .data.token' | \
+base64 --decode`  
+
+### Подключите кластер Kubernetes к сборкам GitLab
+
+
 ### Инсталировать GitLab Runner
 ### Настроить CI/CD
 
