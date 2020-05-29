@@ -86,15 +86,25 @@ subjects:
   namespace: kube-system
 ```
 
-Создайте сервисный аккаунт и получите его секрет
-`kubectl apply -f gitlab-admin-service-account.yaml`   
+Создайте сервисный аккаунт и получите его секрет:  
+`kubectl apply -f gitlab-admin-service-account.yaml`    
 `kubectl -n kube-system get secrets -o json | \
 jq -r '.items[] | select(.metadata.name | startswith("gitlab-admin")) | .data.token' | \
 base64 --decode`  
 
-### Подключите кластер Kubernetes к сборкам GitLab
+Получите адрес узла мастера Kubernetes кластера:  
+`yc managed-kubernetes cluster get <cluster-id> --format=json \
+| jq -r .master.endpoints.external_v4_endpoint`
+
+Получите сертификат мастера Kubernetes кластера CA Certificate:
+`yc managed-kubernetes cluster get <cluster-id> --format=json \
+| jq -r .master.master_auth.cluster_ca_certificate`   
+
+### Подключите кластер Kubernetes к сборкам GitLab.  
+### Установите на кластер Kubernetes приложения Helm Tiller и GitLab Runner.  
+### В настройках CI/CD создайте переменные:
+Задайте переменные `KUBE_URL`, `KUBE_TOKEN`, `OAUTH`, `REGISTRYID` — они потребуются при создании файла `.gitlab-ci.yml`
 
 
-### Инсталировать GitLab Runner
 ### Настроить CI/CD
 
